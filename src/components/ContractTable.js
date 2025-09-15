@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 
 export default function ContractTable() {
   // States
@@ -21,6 +22,11 @@ export default function ContractTable() {
 
   // Fetch initial JSON contracts
   useEffect(() => {
+  const savedContracts = JSON.parse(localStorage.getItem("contracts"));
+  if (savedContracts && savedContracts.length > 0) {
+    setContracts(savedContracts);
+    setLoading(false);
+  } else {
     fetch("/contracts.json")
       .then((res) => res.json())
       .then((data) => {
@@ -28,15 +34,26 @@ export default function ContractTable() {
         setLoading(false);
       })
       .catch(() => setLoading(false));
-  }, []);
+  }
+}, []);
+
 
   // Add contract manually
-  const addContract = (e) => {
-    e.preventDefault();
-    const contract = { id: Date.now(), ...newContract };
-    setContracts((prev) => [...prev, contract]);
-    setNewContract({ name: "", parties: "", expiry: "", status: "Active", risk: "Low" });
-  };
+const addContract = (e) => {
+  e.preventDefault();
+  const contract = { id: Date.now(), ...newContract };
+  const updatedContracts = [...contracts, contract];
+  setContracts(updatedContracts);
+  localStorage.setItem("contracts", JSON.stringify(updatedContracts)); // save to localStorage
+  setNewContract({
+    name: "",
+    parties: "",
+    expiry: "",
+    status: "Active",
+    risk: "Low",
+  });
+};
+
 
   if (loading) return <div>Loading...</div>;
   if (contracts.length === 0) return <div>No contracts yet</div>;
@@ -52,7 +69,10 @@ export default function ContractTable() {
   // Pagination logic
   const totalPages = Math.ceil(filteredContracts.length / rowsPerPage);
   const startIndex = (currentPage - 1) * rowsPerPage;
-  const paginatedContracts = filteredContracts.slice(startIndex, startIndex + rowsPerPage);
+  const paginatedContracts = filteredContracts.slice(
+    startIndex,
+    startIndex + rowsPerPage
+  );
 
   return (
     <div>
@@ -62,7 +82,9 @@ export default function ContractTable() {
           type="text"
           placeholder="Contract Name"
           value={newContract.name}
-          onChange={(e) => setNewContract({ ...newContract, name: e.target.value })}
+          onChange={(e) =>
+            setNewContract({ ...newContract, name: e.target.value })
+          }
           className="border px-3 py-2 rounded"
           required
         />
@@ -70,20 +92,26 @@ export default function ContractTable() {
           type="text"
           placeholder="Parties"
           value={newContract.parties}
-          onChange={(e) => setNewContract({ ...newContract, parties: e.target.value })}
+          onChange={(e) =>
+            setNewContract({ ...newContract, parties: e.target.value })
+          }
           className="border px-3 py-2 rounded"
           required
         />
         <input
           type="date"
           value={newContract.expiry}
-          onChange={(e) => setNewContract({ ...newContract, expiry: e.target.value })}
+          onChange={(e) =>
+            setNewContract({ ...newContract, expiry: e.target.value })
+          }
           className="border px-3 py-2 rounded"
           required
         />
         <select
           value={newContract.status}
-          onChange={(e) => setNewContract({ ...newContract, status: e.target.value })}
+          onChange={(e) =>
+            setNewContract({ ...newContract, status: e.target.value })
+          }
           className="border px-3 py-2 rounded"
         >
           <option>Active</option>
@@ -92,14 +120,19 @@ export default function ContractTable() {
         </select>
         <select
           value={newContract.risk}
-          onChange={(e) => setNewContract({ ...newContract, risk: e.target.value })}
+          onChange={(e) =>
+            setNewContract({ ...newContract, risk: e.target.value })
+          }
           className="border px-3 py-2 rounded"
         >
           <option>Low</option>
           <option>Medium</option>
           <option>High</option>
         </select>
-        <button type="submit" className="bg-green-500 text-white px-4 py-2 rounded mt-2">
+        <button
+          type="submit"
+          className="bg-green-500 text-white px-4 py-2 rounded mt-2"
+        >
           Add Contract
         </button>
       </form>
@@ -149,7 +182,14 @@ export default function ContractTable() {
         <tbody>
           {paginatedContracts.map((c) => (
             <tr key={c.id}>
-              <td className="p-2 border">{c.name}</td>
+              <td className="p-2 border">
+                <Link
+                  to={`/dashboard/contracts/${c.id}`}
+                  className="text-blue-600 hover:underline"
+                >
+                  {c.name}
+                </Link>
+              </td>
               <td className="p-2 border">{c.parties}</td>
               <td className="p-2 border">{c.expiry}</td>
               <td className="p-2 border">{c.status}</td>
