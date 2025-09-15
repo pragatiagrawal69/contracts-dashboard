@@ -1,12 +1,25 @@
 import React, { useEffect, useState } from "react";
 
 export default function ContractTable() {
+  // States
   const [contracts, setContracts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("All");
   const [riskFilter, setRiskFilter] = useState("All");
+  const [currentPage, setCurrentPage] = useState(1);
+  const rowsPerPage = 5;
 
+  // Form state for manual add
+  const [newContract, setNewContract] = useState({
+    name: "",
+    parties: "",
+    expiry: "",
+    status: "Active",
+    risk: "Low",
+  });
+
+  // Fetch initial JSON contracts
   useEffect(() => {
     fetch("/contracts.json")
       .then((res) => res.json())
@@ -17,10 +30,18 @@ export default function ContractTable() {
       .catch(() => setLoading(false));
   }, []);
 
+  // Add contract manually
+  const addContract = (e) => {
+    e.preventDefault();
+    const contract = { id: Date.now(), ...newContract };
+    setContracts((prev) => [...prev, contract]);
+    setNewContract({ name: "", parties: "", expiry: "", status: "Active", risk: "Low" });
+  };
+
   if (loading) return <div>Loading...</div>;
   if (contracts.length === 0) return <div>No contracts yet</div>;
 
-  // 🔍 Filter contracts based on search + filters
+  // Filter contracts
   const filteredContracts = contracts.filter((c) => {
     const matchesSearch = c.name.toLowerCase().includes(search.toLowerCase());
     const matchesStatus = statusFilter === "All" || c.status === statusFilter;
@@ -28,19 +49,70 @@ export default function ContractTable() {
     return matchesSearch && matchesStatus && matchesRisk;
   });
 
+  // Pagination logic
+  const totalPages = Math.ceil(filteredContracts.length / rowsPerPage);
+  const startIndex = (currentPage - 1) * rowsPerPage;
+  const paginatedContracts = filteredContracts.slice(startIndex, startIndex + rowsPerPage);
+
   return (
     <div>
-      {/* Search bar */}
-      <input
-        type="text"
-        placeholder="Search contracts..."
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
-        className="border px-3 py-2 rounded mb-4 w-full"
-      />
+      {/* Manual Add Form */}
+      <form onSubmit={addContract} className="mb-4 flex flex-col gap-2">
+        <input
+          type="text"
+          placeholder="Contract Name"
+          value={newContract.name}
+          onChange={(e) => setNewContract({ ...newContract, name: e.target.value })}
+          className="border px-3 py-2 rounded"
+          required
+        />
+        <input
+          type="text"
+          placeholder="Parties"
+          value={newContract.parties}
+          onChange={(e) => setNewContract({ ...newContract, parties: e.target.value })}
+          className="border px-3 py-2 rounded"
+          required
+        />
+        <input
+          type="date"
+          value={newContract.expiry}
+          onChange={(e) => setNewContract({ ...newContract, expiry: e.target.value })}
+          className="border px-3 py-2 rounded"
+          required
+        />
+        <select
+          value={newContract.status}
+          onChange={(e) => setNewContract({ ...newContract, status: e.target.value })}
+          className="border px-3 py-2 rounded"
+        >
+          <option>Active</option>
+          <option>Expired</option>
+          <option>Renewal Due</option>
+        </select>
+        <select
+          value={newContract.risk}
+          onChange={(e) => setNewContract({ ...newContract, risk: e.target.value })}
+          className="border px-3 py-2 rounded"
+        >
+          <option>Low</option>
+          <option>Medium</option>
+          <option>High</option>
+        </select>
+        <button type="submit" className="bg-green-500 text-white px-4 py-2 rounded mt-2">
+          Add Contract
+        </button>
+      </form>
 
-      {/* Filters */}
-      <div className="flex gap-4 mb-4">
+      {/* Search & Filters */}
+      <div className="flex flex-col md:flex-row gap-4 mb-4">
+        <input
+          type="text"
+          placeholder="Search contracts..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          className="border px-3 py-2 rounded flex-1"
+        />
         <select
           value={statusFilter}
           onChange={(e) => setStatusFilter(e.target.value)}
@@ -51,7 +123,6 @@ export default function ContractTable() {
           <option value="Expired">Expired</option>
           <option value="Renewal Due">Renewal Due</option>
         </select>
-
         <select
           value={riskFilter}
           onChange={(e) => setRiskFilter(e.target.value)}
@@ -76,7 +147,7 @@ export default function ContractTable() {
           </tr>
         </thead>
         <tbody>
-          {filteredContracts.map((c) => (
+          {paginatedContracts.map((c) => (
             <tr key={c.id}>
               <td className="p-2 border">{c.name}</td>
               <td className="p-2 border">{c.parties}</td>
@@ -87,6 +158,21 @@ export default function ContractTable() {
           ))}
         </tbody>
       </table>
+
+      {/* Pagination Buttons */}
+      <div className="flex gap-2 mt-4">
+        {Array.from({ length: totalPages }, (_, i) => (
+          <button
+            key={i + 1}
+            className={`px-3 py-1 border rounded ${
+              currentPage === i + 1 ? "bg-blue-500 text-white" : ""
+            }`}
+            onClick={() => setCurrentPage(i + 1)}
+          >
+            {i + 1}
+          </button>
+        ))}
+      </div>
     </div>
   );
 }
