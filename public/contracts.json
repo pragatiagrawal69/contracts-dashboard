@@ -1,0 +1,82 @@
+[
+  {
+    "id": 1,
+    "name": "Contract with ABC Corp",
+    "parties": "ABC Corp, Pragati Ltd",
+    "expiry": "2026-01-15",
+    "status": "Active",
+    "risk": "Low"
+  },
+  {
+    "id": 2,
+    "name": "Contract with XYZ Ltd",
+    "parties": "XYZ Ltd, Pragati Ltd",
+    "expiry": "2024-12-10",
+    "status": "Expired",
+    "risk": "High"
+  },
+  {
+    "id": 3,
+    "name": "Contract with LMN Pvt Ltd",
+    "parties": "LMN Pvt Ltd, Pragati Ltd",
+    "expiry": "2025-03-20",
+    "status": "Renewal Due",
+    "risk": "Medium"
+  },
+  {
+    "id": 4,
+    "name": "Contract with PQR Associates",
+    "parties": "PQR Associates, Pragati Ltd",
+    "expiry": "2025-07-30",
+    "status": "Active",
+    "risk": "Low"
+  },
+  {
+    "id": 5,
+    "name": "Contract with Delta Inc",
+    "parties": "Delta Inc, Pragati Ltd",
+    "expiry": "2026-11-11",
+    "status": "Active",
+    "risk": "Low"
+  },
+  {
+    "id": 6,
+    "name": "Contract with Omega Corp",
+    "parties": "Omega Corp, Pragati Ltd",
+    "expiry": "2023-08-01",
+    "status": "Expired",
+    "risk": "High"
+  },
+  {
+    "id": 7,
+    "name": "Contract with Alpha Technologies",
+    "parties": "Alpha Technologies, Pragati Ltd",
+    "expiry": "2025-09-01",
+    "status": "Renewal Due",
+    "risk": "Medium"
+  },
+  {
+    "id": 8,
+    "name": "Contract with Beta Solutions",
+    "parties": "Beta Solutions, Pragati Ltd",
+    "expiry": "2026-02-18",
+    "status": "Active",
+    "risk": "Low"
+  },
+  {
+    "id": 9,
+    "name": "Contract with Gamma Group",
+    "parties": "Gamma Group, Pragati Ltd",
+    "expiry": "2026-05-05",
+    "status": "Active",
+    "risk": "Low"
+  },
+  {
+    "id": 10,
+    "name": "Contract with Zeta Enterprises",
+    "parties": "Zeta Enterprises, Pragati Ltd",
+    "expiry": "2024-04-22",
+    "status": "Expired",
+    "risk": "High"
+  }
+]
